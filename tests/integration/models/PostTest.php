@@ -10,105 +10,96 @@ class PostTest extends TestCase
     // use DatabaseMigrations;
     use DatabaseTransactions;
 
+    public function setUp()
+    {
+        parent::setUp();
+
+        // Given:
+        // I have a post
+        $this->post = factory(Post::class)->create();
+        // and a user and that user is logged in
+        $this->signIn();
+    }
+
     /** @test */
     public function a_user_can_like_a_post()
     {
-        // Given:
-        // I have a post
-        $post = factory(Post::class)->create();
-        // and a user
-        $user = factory(User::class)->create();
-        // and that user is logged in
-        $this->actingAs($user);
+        // Given
+        // check out set up
 
         // Wheen
         // they like a post
-        $post->like();
+        $this->post->like();
 
         // Then
         // we should see evidence in the database
         $this->seeInDatabase('likes', [
-            'user_id'       => $user->id,
-            'likeable_id'   => $post->id,
-            'likeable_type' => get_class($post),
+            'user_id'       => $this->user->id,
+            'likeable_id'   => $this->post->id,
+            'likeable_type' => get_class($this->post),
         ]);
         // and the post shoud be liked
-        $this->assertTrue($post->isLiked());
+        $this->assertTrue($this->post->isLiked());
     }
 
     /** @test */
     public function a_user_can_unlinke_a_post()
     {
-        // Given:
-        // I have a post
-        $post = factory(Post::class)->create();
-        // and a user
-        $user = factory(User::class)->create();
-        // and that user is logged in
-        $this->actingAs($user);
+        // Given
+        // check out set up
 
         // Wheen
         // they like a post
-        $post->like();
+        $this->post->like();
         // they unlike a post
-        $post->unlike();
+        $this->post->unlike();
 
         // Then
         // we should not see evidence in the database
         $this->notSeeInDatabase('likes', [
-            'user_id'       => $user->id,
-            'likeable_id'   => $post->id,
-            'likeable_type' => get_class($post),
+            'user_id'       => $this->user->id,
+            'likeable_id'   => $this->post->id,
+            'likeable_type' => get_class($this->post),
         ]);
         // and the post not shoud be liked
-        $this->assertFalse($post->isLiked());
+        $this->assertFalse($this->post->isLiked());
     }
 
     /** @test */
     public function a_user_may_toggle_a_post_like_unlike()
     {
-        // Given:
-        // I have a post
-        $post = factory(Post::class)->create();
-        // and a user
-        $user = factory(User::class)->create();
-        // and that user is logged in
-        $this->actingAs($user);
+        // Given
+        // check out set up
 
         // Wheen
         // they toggle like/unlike a post
-        $post->toggle();
+        $this->post->toggle();
 
         // Then
         // and the post shoud be liked
-        $this->assertTrue($post->isLiked());
+        $this->assertTrue($this->post->isLiked());
 
         // Wheen
         // they toggle like/unlike a post
-        $post->toggle();
+        $this->post->toggle();
 
         // Then
         // and the post not shoud be liked
-        $this->assertFalse($post->isLiked());
+        $this->assertFalse($this->post->isLiked());
     }
 
     /** @test */
     public function a_post_knows_how_many_likes_it_has()
     {
-        // Given:
-        // I have a post
-        $post = factory(Post::class)->create();
-        // and a user
-        $user = factory(User::class)->create();
-        // and that user is logged in
-        $this->actingAs($user);
+        // Given
+        // check out set up
 
         // Wheen
         // they toggle like/unlike a post
-        $post->toggle();
+        $this->post->toggle();
 
         // Then
         // and the likes count
-        $this->assertEquals(1, $post->likesCount);
+        $this->assertEquals(1, $this->post->likesCount);
     }
 }
