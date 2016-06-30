@@ -10,7 +10,8 @@ class UserTest extends TestCase
     // use DatabaseMigrations;
     use DatabaseTransactions;
 
-    public function testAUserCanBeCreated()
+    /** @test */
+    public function a_user_can_be_created()
     {
         $user = User::create([
             'name'     => 'User',
